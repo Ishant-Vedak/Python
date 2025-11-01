@@ -1,0 +1,16 @@
+Date,City,Temperature,Humidity,Precipitation
+2025-01-01,New York,2,65,0
+2025-01-02,New York,3,60,0
+2025-01-03,New York,5,55,2
+2025-01-04,New York,4,58,5
+2025-01-05,New York,6,62,0
+2025-01-01,Los Angeles,18,40,0
+2025-01-02,Los Angeles,19,42,0
+2025-01-03,Los Angeles,20,38,0
+2025-01-04,Los Angeles,21,36,0
+2025-01-05,Los Angeles,20,37,0
+2025-01-01,Chicago,-2,70,1
+2025-01-02,Chicago,-1,68,0
+2025-01-03,Chicago,0,72,3
+2025-01-04,Chicago,1,75,5
+2025-01-05,Chicago,0,73,2
