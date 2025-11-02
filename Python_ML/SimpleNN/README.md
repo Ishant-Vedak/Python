@@ -1,6 +1,6 @@
 # Project Overview:
 
-This project is to help me learn how to use PyTorch for deep learning by creating a simple neural network. I used the playlist from [Codemy.com on youtube](Link: https://youtube.com/playlist?list=PLCC34OHNcOtpcgR9LEYSdi9r7XIbpkpK1&si=hTViaIs3t68OE1ug).
+This project is to help me learn how to use PyTorch for deep learning by creating a simple neural network. I used the playlist from [Codemy.com on youtube](https://youtube.com/playlist?list=PLCC34OHNcOtpcgR9LEYSdi9r7XIbpkpK1&si=hTViaIs3t68OE1ug).
 
 ## What I learnt: 
 
