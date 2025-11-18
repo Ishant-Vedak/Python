@@ -12,12 +12,29 @@ import pandas as pd
 from notion_client import Client
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 '''  .\.venv\Scripts\activate  '''
+load_dotenv()
 
 allScholarships = []
 
-load_dotenv()
+months = {
+    "January": "01",
+    "February": "02",
+    "March": "03",
+    "April": "04",
+    "May": "05",
+    "June": "06",
+    "July": "07",
+    "August": "08",
+    "September": "09",
+    "October": "10",
+    "November": "11",
+    "December": "12"
+}
+
+
 
 duration = 80
 options = Options()
@@ -50,6 +67,31 @@ def findAndClick(selector: By, identifier: str):
     var_name.click()
     return var_name
 
+def createISOformat(input: str):
+    splitted = input.strip().split()
+    if len(splitted) < 4:
+        print(f"Malformed date string: {input}")
+        return None
+    month_num = months.get(splitted[1], "01")
+    try:
+        day_clean = ''.join(filter(str.isdigit, splitted[2]))
+        date_value = datetime(int(splitted[3]), int(month_num), int(day_clean)).isoformat()
+        return date_value
+    except Exception as e:
+        print(f"Error parsing date: {input} -> {e}")
+        return None
+
+def dollarAmount(input:str):
+    input = input.strip().replace("$", "").replace(",","")
+    if "(" in input:
+        amount, _ = input.split("(", 1)
+    else: 
+        amount = input
+    try:
+        return float(amount)
+    except ValueError:
+        print(f"Malformed amount: {input}")
+        return 0.0
 
 Waitfor(5, By.CLASS_NAME, "gLFyf")
 findAndSendKeys(By.CLASS_NAME, "gLFyf", "scholartree.com", Keys.ENTER)
@@ -100,16 +142,16 @@ df.to_json("scholarships.json", orient="records", indent=2, force_ascii=False)
 notion = Client(auth=os.getenv("WORKING_NOTION_API_KEY"))
 
 for _, scholarship in df.iterrows():
-    open_or_closed = ""
+    status = ""
     if str(scholarship["Date"]).startswith("D"):
-        open_or_closed = "Open"
+        status = "Open"
     else: 
-        open_or_closed = "Closed"
+        status = "Closed"
     
     req_str = ""
     for requirement in scholarship["Requirements"]:
         req_str += str(requirement) + " "
-        
+
     notion.pages.create(
         parent={"database_id": os.getenv("WORKING_DB_KEY")},
         properties={
@@ -117,16 +159,16 @@ for _, scholarship in df.iterrows():
                 "title": [{"text": {"content": scholarship["Name"]}}]
                 },
             "Amount": {
-                "rich_text": [{"text": {"content": str(scholarship["Amount"])}}]
+                "number": int(dollarAmount(str(scholarship["Amount"])))
                 },
             "Date": {
-                "rich_text": [{"text": {"content": str(scholarship["Date"])}}]
+                "date": {"start": createISOformat(str(scholarship["Date"]))}
                 },
             "Requirements": {
                 "rich_text": [{"text": {"content": req_str}}]
                 },
             "Open or Closed?": {
-                "select": {"name": open_or_closed}
+                "select": {"name": status}
                 },
             "Completed": {
                 "select": {"name": "Not Completed"}
