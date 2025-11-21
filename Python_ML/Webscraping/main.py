@@ -93,6 +93,17 @@ def dollarAmount(input:str):
         print(f"Malformed amount: {input}")
         return 0.0
 
+def existing_scholarship(json_file: str, scholarship_name: str): 
+    with open(json_file, "r") as file:
+        data = json.load(file)
+    
+    for item in data: 
+        if item.get("Name") == scholarship_name:
+            return True
+    
+
+    return False
+
 Waitfor(5, By.CLASS_NAME, "gLFyf")
 findAndSendKeys(By.CLASS_NAME, "gLFyf", "scholartree.com", Keys.ENTER)
 Waitfor(30, By.XPATH, "//h3")
@@ -142,6 +153,31 @@ df.to_json("scholarships.json", orient="records", indent=2, force_ascii=False)
 notion = Client(auth=os.getenv("WORKING_NOTION_API_KEY"))
 
 for _, scholarship in df.iterrows():
+    '''   check the db if the scholarship already exists. 
+    
+        for some reason, notion.databases.query does not work, so I will use the json file that is generated to check. 
+    
+    
+    existing_scholarship = notion.databases.query(
+        {
+            "database_id": os.getenv("WORKING_DB_KEY"),
+            "filter": {
+                "property": "Name",
+                "title": {
+                    "equals": str(scholarship["Name"])
+                }
+            }
+        }
+    )
+
+
+    if existing_scholarship["results"]: 
+        continue
+    '''
+
+    if existing_scholarship("scholarships.json", str(scholarship["Name"])):
+        continue
+
     status = ""
     if str(scholarship["Date"]).startswith("D"):
         status = "Open"
@@ -176,10 +212,13 @@ for _, scholarship in df.iterrows():
         }
     )
 
-'''   check the db if the scholarship already exists. '''
+
 
 ''' add scholarship titles to google calendar'''
 
 '''  check calendar if the scholarship already exists. '''
 
 '''   maybe be able to change properties'''
+
+
+print("All is done")
